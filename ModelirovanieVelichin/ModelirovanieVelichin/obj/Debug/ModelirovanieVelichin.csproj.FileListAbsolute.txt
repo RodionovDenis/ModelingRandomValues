@@ -1,0 +1,11 @@
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\bin\Debug\ModelirovanieVelichin.exe.config
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\bin\Debug\ModelirovanieVelichin.exe
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\bin\Debug\ModelirovanieVelichin.pdb
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.csprojAssemblyReference.cache
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.Form1.resources
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.Properties.Resources.resources
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.csproj.GenerateResource.cache
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.exe
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.pdb
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\bin\Debug\ZedGraph.dll
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.csproj.CopyComplete
