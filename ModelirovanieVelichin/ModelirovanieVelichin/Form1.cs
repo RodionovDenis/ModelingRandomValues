@@ -13,20 +13,27 @@ namespace ModelirovanieVelichin
 {
     public partial class Form1 : Form
     {
-        float[] xvalue; 
+        float[] xvalue;
+        Gistogram Gistogram = new Gistogram(5, true);
+        Gistogram Zsegment = new Gistogram(5, false);
+        Point point;
         public Form1()
         {
             InitializeComponent();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
+            //
+            //заполнение таблички
+            //
+            // 
+            dataGridView3.Rows.Add();
+            dataGridView3.Rows.Add();
+            dataGridView3.Rows[0].Cells[0].Value = "z_j";
+            dataGridView3.Rows[1].Cells[0].Value = "f(z_j)";
+            dataGridView3.Rows[2].Cells[0].Value = "g(z_j)";
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -37,8 +44,8 @@ namespace ModelirovanieVelichin
             int n = int.Parse(textBox2.Text);
 
             xvalue = new float[n];
-            Point point = new Point();
-            for(int i = 0; i< n; i++)
+            point = new Point();
+            for (int i = 0; i < n; i++)
             {
                 point.GetRandomPoint(a);
                 q = point.RandonVariable();
@@ -77,11 +84,11 @@ namespace ModelirovanieVelichin
 
             //вычисление мат.ожидания и дисперсии и помощью метода прямоугольников
             float x0 = 0; float xn = a / (float)Math.Sqrt(3); //пределы интегрирования
-            float h = (xn - x0) / 200;
+            float h = (xn - x0) / 500;
             float M = 0; float D = 0; //значение интеграла
 
             for (float i = x0; i < xn; i += h)
-                M += h * (i + h / 2f) * 
+                M += h * (i + h / 2f) *
                     point.f(i + h / 2f, a); //длина промежутка на значение точки в промежуточной точки
             dataGridView2.Rows[0].Cells[0].Value = M;
 
@@ -95,7 +102,209 @@ namespace ModelirovanieVelichin
             dataGridView2.Rows[0].Cells[2].Value = Math.Abs(M - x_);
             dataGridView2.Rows[0].Cells[5].Value = Math.Abs(D - s2);
 
+            zedGraphControl1.GraphPane.CurveList.Clear();
+            zedGraphControl2.GraphPane.CurveList.Clear();
 
+
+            ZedGraph.PointPairList list1 = new ZedGraph.PointPairList(); //функция распределения
+            ZedGraph.PointPairList list2 = new ZedGraph.PointPairList(); //выборочная функция
+            ZedGraph.PointPairList list3 = new ZedGraph.PointPairList(); //плотность
+            ZedGraph.PointPairList list4 = new ZedGraph.PointPairList(); //гистограмма
+
+            float A = a / (float)Math.Sqrt(3) + 0.1f;
+
+            for (float x = 0; x <= A; x += h)
+            {
+                list1.Add(x, point.F(x, a));
+                list2.Add(x, point.F_(x, a, xvalue));
+                list3.Add(x, point.f(x, a));
+            }
+            //цикл для гистограммы
+            int count = 0; int k = 0;
+            list4.Add(Gistogram.g[0], 0); //начальное построение
+            while (k < Gistogram.g.Length - 1)
+            {
+                if (count % 3 == 0)
+                {
+                    list4.Add(Gistogram.g[k], point.Histogram(Gistogram.g[k], xvalue, Gistogram.g));
+                }
+                else if (count % 3 == 1)
+                {
+                    list4.Add((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, point.Histogram((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, xvalue, Gistogram.g));
+                    list4.Add(Gistogram.g[k + 1], point.Histogram((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, xvalue, Gistogram.g));
+                    k++;
+                }
+                else
+                {
+                    list4.Add(Gistogram.g[k], 0);
+                }
+                count++;
+            }
+            list4.Add(Gistogram.g[Gistogram.g.Length - 1], 0); //конечное построение
+
+            ZedGraph.CurveItem curve1 = zedGraphControl1.GraphPane.AddCurve("F(x)", list1, Color.Blue, SymbolType.None);
+            ZedGraph.CurveItem curve2 = zedGraphControl1.GraphPane.AddCurve("F_(x)", list2, Color.Red, SymbolType.None);
+
+            ZedGraph.CurveItem curve3 = zedGraphControl2.GraphPane.AddCurve("f(x)", list3, Color.Blue, SymbolType.None);
+            ZedGraph.CurveItem curve4 = zedGraphControl2.GraphPane.AddCurve("Гистограмма", list4, Color.Red, SymbolType.None);
+
+            //удаление предыдущего
+            int qwerty = dataGridView3.ColumnCount;
+            if (dataGridView3.ColumnCount != 1)
+                for (int i = 0; i < qwerty - 1; i++)
+                    dataGridView3.Columns.RemoveAt(1);
+
+            //заполнение таблицы
+
+            float eps = 0;
+
+            for (int i = 0; i < Gistogram.g.Length - 1; i++)
+            {
+                float value = (Gistogram.g[i] + Gistogram.g[i + 1]) / 2f;
+                dataGridView3.Columns.Add("z_" + Convert.ToString(i + 1), "z_" + Convert.ToString(i + 1));
+                dataGridView3.Rows[0].Cells[i + 1].Value = value;
+                dataGridView3.Rows[1].Cells[i + 1].Value = point.f(value, a);
+                dataGridView3.Rows[2].Cells[i + 1].Value = point.Histogram(value, xvalue, Gistogram.g);
+                float error = Math.Abs(point.Histogram(value, xvalue, Gistogram.g) - point.f(value, a));
+                if (error > eps)
+                    eps = error;
+            }
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+
+            zedGraphControl2.AxisChange();
+            zedGraphControl2.Invalidate();
+
+            pictureBox1.Visible = true;
+            label5.Text = " = " + Convert.ToString(point.D(xvalue, a));
+            label9.Text = Convert.ToString(eps);
+
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button1_Click_1(sender, e);
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            float a = float.Parse(textBox1.Text);
+
+            Gistogram.ShowDialog();
+            zedGraphControl2.GraphPane.CurveList.RemoveAt(1);
+
+            int count = 0; int k = 0;
+            ZedGraph.PointPairList list4 = new ZedGraph.PointPairList(); //гистограмма
+            list4.Add(Gistogram.g[0], 0); //начальное построение
+            while (k < Gistogram.g.Length - 1)
+            {
+                if (count % 3 == 0)
+                {
+                    list4.Add(Gistogram.g[k], point.Histogram(Gistogram.g[k], xvalue, Gistogram.g));
+                }
+                else if (count % 3 == 1)
+                {
+                    list4.Add((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, point.Histogram((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, xvalue, Gistogram.g));
+                    list4.Add(Gistogram.g[k + 1], point.Histogram((Gistogram.g[k] + Gistogram.g[k + 1]) / 2, xvalue, Gistogram.g));
+                    k++;
+                }
+                else
+                {
+                    list4.Add(Gistogram.g[k], 0);
+                }
+                count++;
+            }
+            list4.Add(Gistogram.g[Gistogram.g.Length - 1], 0); //конечное построение
+
+            ZedGraph.CurveItem curve4 = zedGraphControl2.GraphPane.AddCurve("Гистограмма", list4, Color.Red, SymbolType.None);
+
+
+            //удаление предыдущего
+            int qwerty = dataGridView3.ColumnCount;
+            if (dataGridView3.ColumnCount != 1)
+                for (int i = 0; i < qwerty - 1; i++)
+                    dataGridView3.Columns.RemoveAt(1);
+
+            //заполнение таблицы
+
+            float eps = 0;
+
+            for (int i = 0; i < Gistogram.g.Length - 1; i++)
+            {
+                float value = (Gistogram.g[i] + Gistogram.g[i + 1]) / 2f;
+                dataGridView3.Columns.Add("z_" + Convert.ToString(i + 1), "z_" + Convert.ToString(i + 1));
+                dataGridView3.Rows[0].Cells[i + 1].Value = value;
+                dataGridView3.Rows[1].Cells[i + 1].Value = point.f(value, a);
+                dataGridView3.Rows[2].Cells[i + 1].Value = point.Histogram(value, xvalue, Gistogram.g);
+                float error = Math.Abs(point.Histogram(value, xvalue, Gistogram.g) - point.f(value, a));
+                if (error > eps)
+                    eps = error;
+            }
+
+            zedGraphControl2.AxisChange();
+            zedGraphControl2.Invalidate();
+
+            label9.Text = Convert.ToString(eps);
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            button1_Click_1(sender, e);
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            float a = float.Parse(textBox1.Text);
+            point = new Point();
+
+            Zsegment.ShowDialog();
+            //теоретические вероятности
+            int len = Zsegment.z.Length;
+            float h = (float)((Zsegment.z[len - 1] - Zsegment.z[0]) / (100 * a));
+            float[] q = new float[len - 1];
+            for (int i = 0; i < len - 1; i++)
+            {
+                q[i] = point.F(Zsegment.z[i + 1], a) - point.F(Zsegment.z[i], a);
+                dataGridView4.Rows.Add(i + 1, q[i]);
+            }
+            label16.Text = Convert.ToString(point.R0(xvalue, Zsegment.z, q));
+            float FR0 = point.FR0((float)Convert.ToDouble(label16.Text), q.Length);
+            label17.Text = "= " + Convert.ToString(FR0);
+            float alfa = (float)Convert.ToDouble(textBox3.Text);
+            if (alfa > FR0)
+                label18.Text = "Гипотеза принята!";
+            else
+                label18.Text = "Гипотеза не принята!";
+                   
+        }
+        private void tabPage4_Click(object sender, EventArgs e)
+        {
 
         }
     }

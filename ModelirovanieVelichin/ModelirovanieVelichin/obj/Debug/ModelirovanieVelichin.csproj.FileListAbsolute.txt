@@ -9,3 +9,4 @@ Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\Modelirovanie
 Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.pdb
 Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\bin\Debug\ZedGraph.dll
 Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.csproj.CopyComplete
+Z:\projectvs\ModelirovanieVelichin\ModelirovanieVelichin\obj\Debug\ModelirovanieVelichin.Gistogram.resources
