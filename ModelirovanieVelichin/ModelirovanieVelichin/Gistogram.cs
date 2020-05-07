@@ -15,14 +15,16 @@ namespace ModelirovanieVelichin
         public float[] g;
         public float[] z;
         bool num;
+        private float a = 0;
         public Gistogram()
         {
             InitializeComponent();
         }
-        public Gistogram(float a, bool numberlab)
+        public Gistogram(float _a, bool numberlab)
         {
             InitializeComponent();
             num = numberlab;
+            a = _a;
             int N = (int)a;
             g = new float[N];
             z = new float[N];
@@ -86,8 +88,8 @@ namespace ModelirovanieVelichin
             }
             else 
             {
-                z = new float[N];
-                for (int i = 0; i < N; i++)
+                z = new float[N+1];
+                for (int i = 0; i < N + 1; i++)
                     z[i] = A + (B - A) / N * i;
             }
                 Close();

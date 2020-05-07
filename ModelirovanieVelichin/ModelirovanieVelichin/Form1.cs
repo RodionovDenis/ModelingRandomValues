@@ -284,10 +284,23 @@ namespace ModelirovanieVelichin
             point = new Point();
 
             Zsegment.ShowDialog();
-            //теоретические вероятности
+                   
+        }
+        private void tabPage4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            dataGridView4.Rows.Clear();
+            float a = float.Parse(textBox1.Text);
+            point = new Point();
+
             int len = Zsegment.z.Length;
             float h = (float)((Zsegment.z[len - 1] - Zsegment.z[0]) / (100 * a));
             float[] q = new float[len - 1];
+            //теоретические вероятности
             for (int i = 0; i < len - 1; i++)
             {
                 q[i] = point.F(Zsegment.z[i + 1], a) - point.F(Zsegment.z[i], a);
@@ -298,14 +311,15 @@ namespace ModelirovanieVelichin
             label17.Text = "= " + Convert.ToString(FR0);
             float alfa = (float)Convert.ToDouble(textBox3.Text);
             if (alfa > FR0)
-                label18.Text = "Гипотеза принята!";
-            else
                 label18.Text = "Гипотеза не принята!";
-                   
-        }
-        private void tabPage4_Click(object sender, EventArgs e)
-        {
+            else
+                label18.Text = "Гипотеза принята!";
 
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            button1_Click_1(sender, e);
         }
     }
 }

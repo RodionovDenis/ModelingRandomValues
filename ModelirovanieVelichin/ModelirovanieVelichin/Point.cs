@@ -127,17 +127,13 @@ namespace ModelirovanieVelichin
                 return count / (xvalue.Length * (histogram[i] - histogram[i - 1])); 
             }
         }
-        private int countX(float [] xvalue, float a, float b)
+        private int countX(float[] xvalue, float a, float b)
         {
             int count = 0;
-            //количество значений, попавших в промежуток [a,b]
-            if (xvalue[0] < a)
-                return 0;
-            else
+            for (int i = 0; i < xvalue.Length; i++)
             {
-                for (int i = 0; i < xvalue.Length; i++)
-                    if (xvalue[i] < b)
-                        count++;
+                if (xvalue[i] >= a && xvalue[i] <= b)
+                    count++;
             }
             return count;
         }
@@ -146,8 +142,11 @@ namespace ModelirovanieVelichin
             float R0 = 0;
             //все значения отсортированны
             for (int i = 0; i < z.Length - 1; i++)
-                R0 += ((countX(xvalue, z[i], z[i + 1]) - xvalue.Length * q[i]) *
-                    (countX(xvalue, z[i], z[i + 1]) - xvalue.Length * q[i])) / (xvalue.Length * q[i]);
+            {
+                float countx = countX(xvalue, z[i], z[i + 1]);
+                float value = xvalue.Length * q[i];
+                R0 += (float)(Math.Pow(countx - value, 2) / value);
+            }
             return R0;
         }
         private int Factorial(int n)
@@ -188,7 +187,7 @@ namespace ModelirovanieVelichin
             float FR0 = 0;
             for (float i = 0; i < R0; i += h)
                 FR0 += h * f_x2(i + h / 2, k);
-            return FR0;
+            return 1 - FR0;
         }
     }
 }
